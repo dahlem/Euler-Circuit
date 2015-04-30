@@ -1,0 +1,4 @@
+* [0.5] - 2015-04-30
+** Changed
+ - Read the ICD-9 categories and compute the tree structure
+ - Implement DFS to compute the Euler Circuit
