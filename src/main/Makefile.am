@@ -8,22 +8,22 @@
 # WITHOUT ANY WARRANTY, to the extent permitted by law; without even the
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
-bin_PROGRAMS = icd9Tree
+bin_PROGRAMS = ec
 
-icd9Tree_SOURCES =                                                           \
+ec_SOURCES =                                                                 \
 	main.cc                                                              \
 	CL.cc
 
-icd9Tree_CPPFLAGS =                                                          \
+ec_CPPFLAGS =                                                                \
 	$(BOOST_CPPFLAGS)                                                    \
 	-I./includes
 
-icd9Tree_LDADD =                                                             \
+ec_LDADD =                                                                   \
 	$(BOOST_FILESYSTEM_LIB)                                              \
 	$(BOOST_PROGRAM_OPTIONS_LIB)                                         \
 	$(BOOST_SYSTEM_LIB)
 
-icd9Tree_LDFLAGS =                                                           \
+ec_LDFLAGS =                                                                 \
 	$(BOOST_LDFLAGS)
 
 include_HEADERS = includes

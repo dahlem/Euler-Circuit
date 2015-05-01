@@ -19,17 +19,24 @@
  *
  * @author Dominik Dahlem
  */
-#ifndef __ICD9_GRAPH_HH__
-#define __ICD9_GRAPH_HH__
+#ifndef __GRAPH_HH__
+#define __GRAPH_HH__
+
+#if HAVE_CONFIG_H
+# include <config.h>
+#endif
 
 #ifndef __STDC_CONSTANT_MACROS
 # define __STDC_CONSTANT_MACROS
 #endif /* __STDC_CONSTANT_MACROS */
 
-#include <algorithm>
-#include <iostream>
-#include <iterator>
-#include <vector>
+#ifndef NDEBUG
+# include <algorithm>
+# include <iostream>
+# include <iterator>
+#endif /* NDEBUG */
+
+#include <sstream>
 
 #include <boost/cstdint.hpp>
 #include <boost/foreach.hpp>
@@ -38,10 +45,8 @@
 #include <boost/graph/depth_first_search.hpp>
 
 #include "Types.hh"
-namespace types = icd9::types;
+namespace itypes = types;
 
-namespace icd9
-{
 namespace graph
 {
 
@@ -128,7 +133,7 @@ Vertex find(const std::string &p_symbol, Graph &p_graph, Vertex &p_vertex)
   return NULL;
 }
 
-void add(const types::ICD9Categories &p_cats, Graph &p_graph, Vertex &p_root)
+void add(const itypes::StringVector &p_cats, Graph &p_graph, Vertex &p_root)
 {
   Vertex curV = p_root;
   Vertex nextV = NULL;
@@ -151,25 +156,31 @@ void add(const types::ICD9Categories &p_cats, Graph &p_graph, Vertex &p_root)
     Vertex newV = boost::add_vertex(p_graph);
     std::pair<Edge, bool> e = add_edge(curV, newV, p_graph);
 
+    std::stringstream name;
+    name << i+1 << ":" << p_cats[i];
     p_graph[newV].id = numVertices;
     p_graph[newV].level = i+1;
-    p_graph[newV].name = p_cats[i];
+    p_graph[newV].name = name.str();
     curV = newV;
     numVertices += 1;
   }
 }
 
+template <class StringVector, class IntVector>
 class dfs_euler_circuit : public boost::default_dfs_visitor
 {
  public:
-  dfs_euler_circuit() {
+  dfs_euler_circuit(StringVector &p_euler_circuit, IntVector &p_levels)
+      : m_euler_circuit(p_euler_circuit), m_levels(p_levels) {
   }
 
   ~dfs_euler_circuit() {
+#ifndef NDEBUG
     std::copy(m_euler_circuit.begin(), m_euler_circuit.end(), std::ostream_iterator<std::string>(std::cout, " "));
     std::cout << std::endl;
     std::copy(m_levels.begin(), m_levels.end(), std::ostream_iterator<boost::uint16_t>(std::cout, " "));
     std::cout << std::endl;
+#endif /* NDEBUG */
   }
 
   template <typename Vertex, typename Graph>
@@ -245,12 +256,11 @@ class dfs_euler_circuit : public boost::default_dfs_visitor
   }
 
  private:
-  std::vector<std::string> m_euler_circuit;
-  std::vector<boost::uint16_t> m_levels;
+  StringVector &m_euler_circuit;
+  IntVector &m_levels;
 };
 
 
-}
 }
 
 

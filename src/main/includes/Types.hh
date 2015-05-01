@@ -19,8 +19,8 @@
  *
  * @author Dominik Dahlem
  */
-#ifndef __ICD9_TYPES_HH__
-#define __ICD9_TYPES_HH__
+#ifndef __TYPES_HH__
+#define __TYPES_HH__
 
 #ifndef __STDC_CONSTANT_MACROS
 # define __STDC_CONSTANT_MACROS
@@ -32,15 +32,13 @@
 #include <boost/cstdint.hpp>
 
 
-namespace icd9
-{
 namespace types
 {
 
-typedef std::vector<std::string> ICD9Categories;
+typedef std::vector<std::string> StringVector;
+typedef std::vector<boost::uint32_t> IntVector;
 
 
-}
 }
 
 

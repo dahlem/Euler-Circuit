@@ -9,10 +9,10 @@
 # implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 AC_PREREQ(2.61)
-AC_INIT([ICD-9 Tree],
-        [0.5],
+AC_INIT([Euler Circuit],
+        [0.6],
         [Dominik Dahlem Dominik.Dahlem@gmail.com], 
-        [icd9Tree])
+        [ec])
 
 AC_CONFIG_AUX_DIR(config)
 AC_CONFIG_SRCDIR([config.h.in])
@@ -52,9 +52,12 @@ AC_HEADER_STDC
 # Boost library check
 AX_BOOST_BASE([1.48])
 
+AX_BOOST_FILESYSTEM
+AX_BOOST_GRAPH
 AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_SYSTEM
-AX_BOOST_FILESYSTEM
+
+AX_LIB_EXPAT
 
 # Check for debug
 #  AC_DEFINE(BOOST_ENABLE_ASSERT_HANDLER, 1, [enable boost asserts])

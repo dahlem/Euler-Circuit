@@ -38,12 +38,6 @@ namespace po = boost::program_options;
 #include "CL.hh"
 
 
-namespace icd9
-{
-namespace main
-{
-
-
 CL::CL()
     : m_opt_desc(new po::options_description("Options"))
 {
@@ -57,7 +51,7 @@ CL::CL()
   po::options_description opt_io("I/O Configuration");
   opt_io.add_options()
       (RESULTS_DIR.c_str(), po::value <std::string>()->default_value("./results"), "results directory.")
-      (ICD9CODES.c_str(), po::value <std::string>()->default_value(""), "CSV file with the ICD-9 codes.")
+      (CODES.c_str(), po::value <std::string>()->default_value(""), "CSV file with the codes.")
       ;
 
   m_opt_desc->add(opt_general);
@@ -87,8 +81,8 @@ int CL::parse(int argc, char *argv[], args_t &p_args)
     p_args.results_dir = vm[RESULTS_DIR.c_str()].as <std::string>();
   }
 
-  if (vm.count(ICD9CODES.c_str())) {
-    p_args.icd9Codes = vm[ICD9CODES.c_str()].as <std::string>();
+  if (vm.count(CODES.c_str())) {
+    p_args.codes = vm[CODES.c_str()].as <std::string>();
   }
 
   std::cout << argv[0] << " " << PACKAGE_VERSION << std::endl;
@@ -96,8 +90,4 @@ int CL::parse(int argc, char *argv[], args_t &p_args)
   std::cout << p_args << std::endl;
 
   return EXIT_SUCCESS;
-}
-
-
-}
 }

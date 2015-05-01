@@ -19,8 +19,8 @@
  *
  * @author Dominik Dahlem
  */
-#ifndef __ICD9_MAIN_CL_HH__
-#define __ICD9_MAIN_CL_HH__
+#ifndef __MAIN_CL_HH__
+#define __MAIN_CL_HH__
 
 #ifndef __STDC_CONSTANT_MACROS
 # define __STDC_CONSTANT_MACROS
@@ -34,19 +34,14 @@ namespace po = boost::program_options;
 #include <boost/scoped_ptr.hpp>
 
 
-namespace icd9
-{
-namespace main
-{
-
 /**
  * const variables specifying the allowed options.
  */
 const std::string HELP = "help";
 const std::string VERS = "version";
 
-const std::string RESULTS_DIR = "result";
-const std::string ICD9CODES = "icd9Codes";
+const std::string RESULTS_DIR = "results";
+const std::string CODES = "codes";
 
 
 /** @struct
@@ -54,21 +49,21 @@ const std::string ICD9CODES = "icd9Codes";
  */
 struct args_t {
   std::string results_dir;        /* directory name for the results */
-  std::string icd9Codes;          /* CSV file of the ICD-9 codes */
+  std::string codes;              /* CSV file of the codes */
 
   args_t(args_t const &args)
-      : results_dir(args.results_dir), icd9Codes(args.icd9Codes)
+      : results_dir(args.results_dir), codes(args.codes)
   {}
 
   args_t()
-      : results_dir(""), icd9Codes("")
+      : results_dir(""), codes("")
   {}
 
   friend std::ostream& operator <<(std::ostream &p_os, const args_t &p_args)
   {
     p_os << "Parameters" << std::endl << std::endl;
     p_os << "Results directory: " << p_args.results_dir << std::endl
-         << "ICD-9 Codes:       " << p_args.icd9Codes << std::endl
+         << "Codes:             " << p_args.codes << std::endl
          << std::endl;
 
     return p_os;
@@ -107,9 +102,6 @@ class CL
   boost::scoped_ptr<po::options_description> m_opt_desc;
 };
 
-
-}
-}
 
 
 #endif

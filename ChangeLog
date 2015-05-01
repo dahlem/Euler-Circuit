@@ -2,3 +2,8 @@
 ** Changed
  - Read the ICD-9 categories and compute the tree structure
  - Implement DFS to compute the Euler Circuit
+
+* [0.6] - 2015-05-01
+** Added
+ - Serialise the Euler Circuit and corresponding levels
+ - Serialise the ICD-9 tree structure into an Graph ML file

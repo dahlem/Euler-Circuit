@@ -26,42 +26,45 @@
 #include <iostream>
 #include <vector>
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/tokenizer.hpp>
 
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/trim.hpp>
+
+#include <boost/graph/graphml.hpp>
+#include <boost/graph/properties.hpp>
+
 #include "CL.hh"
-namespace imain = icd9::main;
 
 #include "Graph.hh"
-namespace igraph = icd9::graph;
+namespace igraph = graph;
 
 #include "Types.hh"
-namespace itypes = icd9::types;
+namespace itypes = types;
 
 typedef boost::tokenizer <boost::escaped_list_separator <char> > Tokenizer;
 
 
 int main(int argc, char *argv[])
 {
-  imain::args_t args;
-  imain::CL cl;
+  args_t args;
+  CL cl;
 
   if (cl.parse(argc, argv, args)) {
     return EXIT_SUCCESS;
   }
 
-  std::ifstream icd9File;
+  std::ifstream codesFile;
 
-  icd9File.open(args.icd9Codes.c_str());
-  if (!icd9File.is_open()) {
-    std::cerr << "Could not open file: " << args.icd9Codes << std::endl;
+  codesFile.open(args.codes.c_str());
+  if (!codesFile.is_open()) {
+    std::cerr << "Could not open file: " << args.codes << std::endl;
     return EXIT_FAILURE;
   }
 
 #ifndef NDEBUG
-  std::cout << "Reading ICD-9 codes..." << std::endl;
+  std::cout << "Reading codes..." << std::endl;
 #endif /* NDEBUG */
 
   igraph::Graph g;
@@ -72,24 +75,47 @@ int main(int argc, char *argv[])
   g[root].name = "epsilon"; // root vertex name
 
   std::string line;
-  while (!icd9File.eof()) {
-    std::getline(icd9File, line);
+  while (!codesFile.eof()) {
+    std::getline(codesFile, line);
 #ifndef NDEBUG
     std::cout << "Read line: " << line << std::endl;
 #endif /* NDEBUG */
 
     if (line != "") {
-      itypes::ICD9Categories cats;
+      itypes::StringVector cats;
       boost::split(cats, line, boost::is_any_of(","), boost::token_compress_on);
 
       // build the tree structure
       igraph::add(cats, g, root);
     }
   }
-  icd9File.close();
+  codesFile.close();
 
+  itypes::StringVector euler_circuit;
+  itypes::IntVector levels;
   igraph::ColorPropertyMap vertex_color_map = boost::get(&igraph::VertexProperties::color, g);
-  boost::depth_first_search(g, boost::visitor(igraph::dfs_euler_circuit()));
+  boost::depth_first_search(g, boost::visitor(
+      igraph::dfs_euler_circuit<itypes::StringVector, itypes::IntVector>(euler_circuit, levels)));
+
+  // serialise the ICD-9 tree, euler circuit and the corresponding levels
+  std::string outEulerFile = args.results_dir + "/euler_circuit.dat";
+  std::ofstream outEuler(outEulerFile.c_str(), std::ios::out);
+  std::copy(euler_circuit.begin(), euler_circuit.end(), std::ostream_iterator<std::string>(outEuler, "\n"));
+  outEuler.close();
+
+  std::string outLevelsFile = args.results_dir + "/levels.dat";
+  std::ofstream outLevels(outLevelsFile.c_str(), std::ios::out);
+  std::copy(levels.begin(), levels.end(), std::ostream_iterator<boost::uint32_t>(outLevels, "\n"));
+  outLevels.close();
+
+  std::string outTreeFile = args.results_dir + "/tree.gml";
+  std::ofstream outTree(outTreeFile.c_str(), std::ios::out);
+  boost::dynamic_properties dp;
+  dp.property("ID", get(&igraph::VertexProperties::id, g));
+  dp.property("Name", get(&igraph::VertexProperties::name, g));
+  dp.property("Level", get(&igraph::VertexProperties::level, g));
+  boost::write_graphml(outTree, g, get(&igraph::VertexProperties::id, g), dp, false);
+  outTree.close();
 
   return EXIT_SUCCESS;
 }

@@ -1,1 +1,39 @@
 README
+
+This project establishes an tree structure given a hierarchical coding
+system. Once this tree structure is created it also computes the Euler
+Circuit and corresponding levels in the tree [1]. The Euler Circuit
+and the corresponding levels can be used to find lowest common
+ancestors in the tree using range minimum queries. This application
+was developed for the ICD-9 coding standard, but it is also
+generalises to others.
+
+The code is implemented in C++ using the boost libraries, in
+particular the Boost Graph Library.
+
+
+EXECUTION
+
+The following command-line parameters are provided:
+
+General Configuration:
+  --help                produce help message
+  --version             show the version
+
+I/O Configuration:
+  --result arg (=./results) results directory.
+  --codes arg               CSV file with the codes.
+
+
+The ICD-9 codes are expected to be in the following format for each
+ICD-9 code:
+
+Level-1, Level-2, ..., Level-n
+
+Internally, a root vertex is created as a parent to all level-1
+vertices in the input file. While the ICD-9 codes have balanced
+levels, other coding systems might not. Internally, the names of the
+vertices are prefixed with the current level. This is to ensure that
+each vertex has a unique name.
+
+[1] http://en.wikipedia.org/wiki/Eulerian_path
