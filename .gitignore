@@ -1,0 +1,10 @@
+Makefile
+Makefile.in
+config.*
+configure
+autom4te.cache
+ec
+*.o
+.deps
+libtool
+stamp-h1
