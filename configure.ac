@@ -58,6 +58,8 @@ AX_BOOST_SYSTEM
 
 AX_LIB_EXPAT
 
+AC_PROG_AWK
+
 # Check for debug
 #  AC_DEFINE(BOOST_ENABLE_ASSERT_HANDLER, 1, [enable boost asserts])
 AC_ARG_ENABLE(debug, AS_HELP_STRING(
@@ -78,6 +80,7 @@ CXXFLAGS="$CFLAGS $CXXFLAGS"
 AC_CONFIG_FILES([
    Makefile
    m4/Makefile
+   scripts/H.sh
    src/Makefile
    src/main/Makefile
 ])

@@ -14,6 +14,7 @@ SUBDIRS = m4 src
 EXTRA_DIST = \
 	README \
 	$(srcdir)/m4 \
+	$(srcdir)/scripts \
 	$(srcdir)/examples
 
 DISTCLEANFILES = configure
