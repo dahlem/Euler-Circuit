@@ -10,7 +10,7 @@
 
 AC_PREREQ(2.61)
 AC_INIT([Euler Circuit],
-        [0.6],
+        [0.7],
         [Dominik Dahlem Dominik.Dahlem@gmail.com], 
         [ec])
 
