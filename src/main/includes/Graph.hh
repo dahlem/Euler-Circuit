@@ -58,7 +58,6 @@ struct VertexProperties
   boost::uint32_t id;
   boost::uint16_t level;
   std::string name;
-  boost::default_color_type color;
 };
 
 /** @typedef Graph
@@ -68,7 +67,7 @@ typedef boost::adjacency_list<
   boost::vecS,
   boost::vecS,
   boost::bidirectionalS,
-  boost::property <boost::vertex_index_t, int, VertexProperties> > Graph;
+  VertexProperties> Graph;
 
 /** @typedef Vertex
  * Specifies the vertex descriptor of a graph
@@ -110,10 +109,10 @@ typedef boost::color_traits <boost::default_color_type> Color;
  */
 typedef boost::property_map<Graph, std::string VertexProperties::*>::type NamePropertyMap;
 
-/** @typedef ColorPropertyMap
- * Defines the property map for the color of the vertices
+/** @typedef IDPropertyMap
+ * Defines the property map for IDs of the vertices
  */
-typedef boost::property_map<Graph, boost::default_color_type VertexProperties::*>::type ColorPropertyMap;
+typedef boost::property_map<Graph, boost::uint32_t VertexProperties::*>::type IDPropertyMap;
 
 
 Vertex find(const std::string &p_symbol, Graph &p_graph, Vertex &p_vertex)
@@ -156,11 +155,9 @@ void add(const itypes::StringVector &p_cats, Graph &p_graph, Vertex &p_root)
     Vertex newV = boost::add_vertex(p_graph);
     std::pair<Edge, bool> e = add_edge(curV, newV, p_graph);
 
-    std::stringstream name;
-    name << i+1 << ":" << p_cats[i];
     p_graph[newV].id = numVertices;
     p_graph[newV].level = i+1;
-    p_graph[newV].name = name.str();
+    p_graph[newV].name = p_cats[i];
     curV = newV;
     numVertices += 1;
   }
@@ -172,10 +169,14 @@ class dfs_euler_circuit : public boost::default_dfs_visitor
  public:
   dfs_euler_circuit(StringVector &p_euler_circuit, IntVector &p_levels)
       : m_euler_circuit(p_euler_circuit), m_levels(p_levels) {
+#ifndef NDEBUG
+    std::cout << "dfs_euler_circuit" << std::endl;
+#endif /* NDEBUG */
   }
 
   ~dfs_euler_circuit() {
 #ifndef NDEBUG
+    std::cout << "~dfs_euler_circuit" << std::endl;
     std::copy(m_euler_circuit.begin(), m_euler_circuit.end(), std::ostream_iterator<std::string>(std::cout, " "));
     std::cout << std::endl;
     std::copy(m_levels.begin(), m_levels.end(), std::ostream_iterator<boost::uint16_t>(std::cout, " "));

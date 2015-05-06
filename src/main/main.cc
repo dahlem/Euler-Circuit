@@ -33,7 +33,9 @@
 #include <boost/algorithm/string/trim.hpp>
 
 #include <boost/graph/graphml.hpp>
+#include <boost/graph/graphviz.hpp>
 #include <boost/graph/properties.hpp>
+#include <boost/graph/undirected_dfs.hpp>
 
 #include "CL.hh"
 
@@ -72,6 +74,7 @@ int main(int argc, char *argv[])
   // the ICD-9 tree is disjointed if we were not to introduce an artificial root vertex
   igraph::Vertex root = boost::add_vertex(g);
   g[root].level = 0;
+  g[root].id = 1;
   g[root].name = "epsilon"; // root vertex name
 
   std::string line;
@@ -93,9 +96,8 @@ int main(int argc, char *argv[])
 
   itypes::StringVector euler_circuit;
   itypes::IntVector levels;
-  igraph::ColorPropertyMap vertex_color_map = boost::get(&igraph::VertexProperties::color, g);
-  boost::depth_first_search(g, boost::visitor(
-      igraph::dfs_euler_circuit<itypes::StringVector, itypes::IntVector>(euler_circuit, levels)));
+  igraph::dfs_euler_circuit<itypes::StringVector, itypes::IntVector> dfs_euler(euler_circuit, levels);
+  boost::depth_first_search(g, boost::visitor(dfs_euler));
 
   // serialise the ICD-9 tree, euler circuit and the corresponding levels
   std::string outEulerFile = args.results_dir + "/euler_circuit.dat";
@@ -108,14 +110,20 @@ int main(int argc, char *argv[])
   std::copy(levels.begin(), levels.end(), std::ostream_iterator<boost::uint32_t>(outLevels, "\n"));
   outLevels.close();
 
-  std::string outTreeFile = args.results_dir + "/tree.gml";
-  std::ofstream outTree(outTreeFile.c_str(), std::ios::out);
   boost::dynamic_properties dp;
-  dp.property("ID", get(&igraph::VertexProperties::id, g));
+  dp.property("id", get(&igraph::VertexProperties::id, g));
   dp.property("Name", get(&igraph::VertexProperties::name, g));
   dp.property("Level", get(&igraph::VertexProperties::level, g));
+
+  std::string outTreeFile = args.results_dir + "/tree.gml";
+  std::ofstream outTree(outTreeFile.c_str(), std::ios::out);
   boost::write_graphml(outTree, g, get(&igraph::VertexProperties::id, g), dp, false);
   outTree.close();
+
+  std::string outGVFile = args.results_dir + "/tree.dot";
+  std::ofstream outGV(outGVFile.c_str(), std::ios::out);
+  boost::write_graphviz(outGV, g, boost::make_label_writer(get(&igraph::VertexProperties::name, g)));
+  outGV.close();
 
   return EXIT_SUCCESS;
 }
