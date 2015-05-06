@@ -42,6 +42,7 @@ const std::string VERS = "version";
 
 const std::string RESULTS_DIR = "results";
 const std::string CODES = "codes";
+const std::string PREFIX = "prefix";
 
 
 /** @struct
@@ -50,13 +51,14 @@ const std::string CODES = "codes";
 struct args_t {
   std::string results_dir;        /* directory name for the results */
   std::string codes;              /* CSV file of the codes */
+  bool prefix;                    /* add prefix to node labels to make them unique */
 
   args_t(args_t const &args)
-      : results_dir(args.results_dir), codes(args.codes)
+      : results_dir(args.results_dir), codes(args.codes), prefix(args.prefix)
   {}
 
   args_t()
-      : results_dir(""), codes("")
+      : results_dir(""), codes(""), prefix(0)
   {}
 
   friend std::ostream& operator <<(std::ostream &p_os, const args_t &p_args)
@@ -64,6 +66,7 @@ struct args_t {
     p_os << "Parameters" << std::endl << std::endl;
     p_os << "Results directory: " << p_args.results_dir << std::endl
          << "Codes:             " << p_args.codes << std::endl
+         << "Prefix:            " << p_args.prefix << std::endl
          << std::endl;
 
     return p_os;

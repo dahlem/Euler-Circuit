@@ -52,6 +52,7 @@ CL::CL()
   opt_io.add_options()
       (RESULTS_DIR.c_str(), po::value <std::string>()->default_value("./results"), "results directory.")
       (CODES.c_str(), po::value <std::string>()->default_value(""), "CSV file with the codes.")
+      (PREFIX.c_str(), po::value <bool>()->default_value(0), "Add prefix to vertex names, if they are not unique.")
       ;
 
   m_opt_desc->add(opt_general);
@@ -83,6 +84,10 @@ int CL::parse(int argc, char *argv[], args_t &p_args)
 
   if (vm.count(CODES.c_str())) {
     p_args.codes = vm[CODES.c_str()].as <std::string>();
+  }
+
+  if (vm.count(PREFIX.c_str())) {
+    p_args.prefix = vm[PREFIX.c_str()].as <bool>();
   }
 
   std::cout << argv[0] << " " << PACKAGE_VERSION << std::endl;
