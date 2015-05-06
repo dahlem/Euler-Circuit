@@ -7,3 +7,10 @@
 ** Added
  - Serialise the Euler Circuit and corresponding levels
  - Serialise the ICD-9 tree structure into an Graph ML file
+
+* [0.7] - 2015-05-05
+** Fixed
+ - Tree construction. Added a command-line argument to uniquify the vertex
+	names using a level prefix.
+** Added
+ - Graphviz output
