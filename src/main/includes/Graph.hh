@@ -40,6 +40,9 @@
 
 #include <boost/cstdint.hpp>
 #include <boost/foreach.hpp>
+#include <boost/tokenizer.hpp>
+
+#include <boost/algorithm/string/split.hpp>
 
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/depth_first_search.hpp>
@@ -50,13 +53,16 @@ namespace itypes = types;
 namespace graph
 {
 
+typedef boost::tokenizer <boost::escaped_list_separator <char> > Tokenizer;
+
+
 /** @struct VertexProperties
  * Structure to define a vertex in the tree
  */
 struct VertexProperties
 {
   boost::uint32_t id;
-  boost::uint16_t level;
+  double level;
   std::string name;
 };
 
@@ -154,20 +160,27 @@ void add(const itypes::StringVector &p_cats, Graph &p_graph, Vertex &p_root)
   for (; i < p_cats.size(); ++i) {
     Vertex newV = boost::add_vertex(p_graph);
     std::pair<Edge, bool> e = add_edge(curV, newV, p_graph);
+    itypes::StringVector tokens;
+    boost::split(tokens, p_cats[i], boost::is_any_of(":"), boost::token_compress_on);
 
+    if (tokens.size() == 1) {
+      p_graph[newV].level = i+1.0;
+      p_graph[newV].name = tokens[0];
+    } else {
+      p_graph[newV].level = boost::lexical_cast<double>(tokens[1]);
+      p_graph[newV].name = tokens[0];
+    }
     p_graph[newV].id = numVertices;
-    p_graph[newV].level = i+1;
-    p_graph[newV].name = p_cats[i];
     curV = newV;
     numVertices += 1;
   }
 }
 
-template <class StringVector, class IntVector>
+template <class StringVector, class DoubleVector>
 class dfs_euler_circuit : public boost::default_dfs_visitor
 {
  public:
-  dfs_euler_circuit(StringVector &p_euler_circuit, IntVector &p_levels)
+  dfs_euler_circuit(StringVector &p_euler_circuit, DoubleVector &p_levels)
       : m_euler_circuit(p_euler_circuit), m_levels(p_levels) {
 #ifndef NDEBUG
     std::cout << "dfs_euler_circuit" << std::endl;
@@ -179,7 +192,7 @@ class dfs_euler_circuit : public boost::default_dfs_visitor
     std::cout << "~dfs_euler_circuit" << std::endl;
     std::copy(m_euler_circuit.begin(), m_euler_circuit.end(), std::ostream_iterator<std::string>(std::cout, " "));
     std::cout << std::endl;
-    std::copy(m_levels.begin(), m_levels.end(), std::ostream_iterator<boost::uint16_t>(std::cout, " "));
+    std::copy(m_levels.begin(), m_levels.end(), std::ostream_iterator<double>(std::cout, " "));
     std::cout << std::endl;
 #endif /* NDEBUG */
   }
@@ -258,7 +271,7 @@ class dfs_euler_circuit : public boost::default_dfs_visitor
 
  private:
   StringVector &m_euler_circuit;
-  IntVector &m_levels;
+  DoubleVector &m_levels;
 };
 
 

@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
   // the ICD-9 tree is disjointed if we were not to introduce an artificial root vertex
   igraph::Vertex root = boost::add_vertex(g);
-  g[root].level = 0;
+  g[root].level = 0.0;
   g[root].id = 1;
   g[root].name = "epsilon"; // root vertex name
 
@@ -95,8 +95,8 @@ int main(int argc, char *argv[])
   codesFile.close();
 
   itypes::StringVector euler_circuit;
-  itypes::IntVector levels;
-  igraph::dfs_euler_circuit<itypes::StringVector, itypes::IntVector> dfs_euler(euler_circuit, levels);
+  itypes::DoubleVector levels;
+  igraph::dfs_euler_circuit<itypes::StringVector, itypes::DoubleVector> dfs_euler(euler_circuit, levels);
   boost::depth_first_search(g, boost::visitor(dfs_euler));
 
   // serialise the ICD-9 tree, euler circuit and the corresponding levels
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
 
   std::string outLevelsFile = args.results_dir + "/levels.dat";
   std::ofstream outLevels(outLevelsFile.c_str(), std::ios::out);
-  std::copy(levels.begin(), levels.end(), std::ostream_iterator<boost::uint32_t>(outLevels, "\n"));
+  std::copy(levels.begin(), levels.end(), std::ostream_iterator<double>(outLevels, "\n"));
   outLevels.close();
 
   boost::dynamic_properties dp;

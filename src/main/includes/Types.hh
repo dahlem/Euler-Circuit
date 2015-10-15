@@ -37,6 +37,7 @@ namespace types
 
 typedef std::vector<std::string> StringVector;
 typedef std::vector<boost::uint32_t> IntVector;
+typedef std::vector<double> DoubleVector;
 
 
 }
